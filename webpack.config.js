@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const paths = {
@@ -12,13 +13,18 @@ module.exports = {
         index: "./src/index.ts",
     },
     output: {
-        filename: "bundle.js",
+        filename: "[name].[contenthash].js",
         path: path.resolve(__dirname, "dist"),
     },
+    devServer: {
+        contentBase: "./dist",
+    },
     plugins: [
+        new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, "src", "index.html"),
-            favicon: path.resolve(__dirname, "src", "assets", "index-favicon.ico"),
+            favicon: path.resolve(__dirname, "src", "assets",
+                                  "index-favicon.ico"),
             chunks: ["index"],
         }),
         // new  BundleAnalyzerPlugin(),
@@ -38,6 +44,11 @@ module.exports = {
                 test: /\.tsx?$/,
                 use: 'ts-loader',
                 exclude: /node_modules/,
+            },
+            {
+                test: /\.js$/,
+                enforce: "pre",
+                use: ["source-map-loader"],
             },
             {
                 test: /\.(png|svg|jpg|jpeg|gif)$/i,
